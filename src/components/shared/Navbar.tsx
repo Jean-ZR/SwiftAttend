@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { ModeToggle } from "@/components/ModeToggle";
+import { ModeToggle } from "@/components/ModeToggle"; // This component might also need to be a client component if it uses client hooks/APIs
 import { UserNav } from "@/components/shared/UserNav";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthProvider"; // Client component hook
@@ -8,8 +10,6 @@ import { BookOpenCheck } from "lucide-react";
 
 // Since useAuth is a client hook, Navbar must be a client component or pass auth state down.
 // For simplicity, making Navbar a client component.
-"use client";
-
 export function Navbar() {
   const { user, loading } = useAuth();
 
