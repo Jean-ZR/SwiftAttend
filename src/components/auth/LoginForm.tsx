@@ -1,10 +1,12 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// useRouter ya no es necesario para la redirección principal, pero podría serlo para otras cosas si las hubiera.
+// import { useRouter } from "next/navigation"; 
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -29,7 +31,7 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
-  const router = useRouter();
+  // const router = useRouter(); // No es necesario para window.location.href
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -55,7 +57,9 @@ export function LoginForm() {
           title: "Login Successful",
           description: "Welcome back!",
         });
-        router.push("/dashboard"); // Redirect to dashboard or intended page
+        // En lugar de router.push, usamos window.location.href
+        // Esto fuerza una recarga completa, lo que puede ayudar a sincronizar el estado de AuthProvider.
+        window.location.href = "/dashboard";
       }
     });
   }
