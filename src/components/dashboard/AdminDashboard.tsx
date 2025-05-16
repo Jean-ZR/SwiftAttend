@@ -1,15 +1,18 @@
+
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, BarChart3 } from "lucide-react";
+import { Users, UserCheck, BarChart3, Settings2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export function AdminDashboard() {
   // Placeholder data - in a real app, this would come from state or API calls
   const stats = [
-    { title: "Total Users", value: "150", icon: <Users className="h-6 w-6 text-primary" />, description: "All registered users" },
-    { title: "Active Teachers", value: "25", icon: <UserCheck className="h-6 w-6 text-primary" />, description: "Teachers with recent activity" },
-    { title: "Overall Attendance", value: "85%", icon: <BarChart3 className="h-6 w-6 text-primary" />, description: "Average attendance rate" },
+    { title: "Total Users", value: "N/A", icon: <Users className="h-6 w-6 text-primary" />, description: "All registered users" },
+    { title: "Active Teachers", value: "N/A", icon: <UserCheck className="h-6 w-6 text-primary" />, description: "Teachers with recent activity" },
+    { title: "Overall Attendance", value: "N/A", icon: <BarChart3 className="h-6 w-6 text-primary" />, description: "Average attendance rate" },
   ];
 
   return (
@@ -21,7 +24,7 @@ export function AdminDashboard() {
         </CardHeader>
         <CardContent>
            <Image 
-              src="https://picsum.photos/seed/adminpanel/800/200" 
+              src="https://placehold.co/800x200.png"
               alt="Admin Panel Banner" 
               width={800} 
               height={200} 
@@ -45,25 +48,30 @@ export function AdminDashboard() {
         </CardContent>
       </Card>
       
-      {/* Add more sections like User Management, System Settings, Reports etc. */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Example action items - replace with actual functionality */}
-            <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                <h4 className="font-semibold mb-1">Manage Users</h4>
-                <p className="text-sm text-muted-foreground">View, edit, or add new users.</p>
-            </div>
-            <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                <h4 className="font-semibold mb-1">System Settings</h4>
-                <p className="text-sm text-muted-foreground">Configure application-wide settings.</p>
-            </div>
-            <div className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                <h4 className="font-semibold mb-1">View Reports</h4>
-                <p className="text-sm text-muted-foreground">Access detailed attendance reports.</p>
-            </div>
+            <Link href="/admin/user-management" passHref>
+              <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
+                <Users className="h-10 w-10 mb-2 text-primary" />
+                <span className="font-semibold">Manage Users</span>
+                <span className="text-xs text-muted-foreground">View, edit roles, create users.</span>
+              </Button>
+            </Link>
+            <Link href="/settings" passHref>
+              <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
+                  <Settings2 className="h-10 w-10 mb-2 text-primary" />
+                  <span className="font-semibold">System Settings</span>
+                  <span className="text-xs text-muted-foreground">Configure application settings.</span>
+              </Button>
+            </Link>
+            <Button variant="outline" disabled className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
+                <BarChart3 className="h-10 w-10 mb-2 text-primary" />
+                <span className="font-semibold">View Reports</span>
+                <span className="text-xs text-muted-foreground">(Coming Soon)</span>
+            </Button>
         </CardContent>
       </Card>
     </div>
