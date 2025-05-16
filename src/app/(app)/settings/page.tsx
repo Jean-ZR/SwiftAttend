@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthProvider";
 import { Input } from "@/components/ui/input";
-import { useState }_from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
