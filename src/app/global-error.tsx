@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,20 @@ export default function GlobalError({
                 {error.digest && `\nDigest: ${error.digest}`}
               </pre>
             )}
-            <Button onClick={() => reset()} variant="destructive">
+            <Button 
+              onClick={() => {
+                if (typeof reset === 'function') {
+                  reset();
+                } else {
+                  // Fallback if reset is not a function (which is unexpected)
+                  console.error("GlobalError: reset prop was not a function. Attempting page reload.");
+                  if (typeof window !== 'undefined') {
+                    window.location.reload();
+                  }
+                }
+              }} 
+              variant="destructive"
+            >
               Try Again
             </Button>
           </div>
