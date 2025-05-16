@@ -1,6 +1,7 @@
+
 "use server";
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut } from "firebase/auth";
+import { createUserWithEmailAndPassword, type UserCredential } from "firebase/auth"; // Removed signInWithEmailAndPassword
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import type { UserRole } from "@/providers/AuthProvider";
@@ -13,10 +14,11 @@ const SignupSchema = z.object({
   displayName: z.string().min(2, "Display name is required").optional(),
 });
 
-const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1, "Password is required"),
-});
+// LoginSchema is no longer needed here if login is fully client-side
+// const LoginSchema = z.object({
+//   email: z.string().email(),
+//   password: z.string().min(1, "Password is required"),
+// });
 
 export async function signupUser(values: z.infer<typeof SignupSchema>) {
   const validatedFields = SignupSchema.safeParse(values);
@@ -27,7 +29,7 @@ export async function signupUser(values: z.infer<typeof SignupSchema>) {
   const { email, password, role, displayName } = validatedFields.data;
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
     await setDoc(doc(db, "users", user.uid), {
@@ -49,42 +51,42 @@ export async function signupUser(values: z.infer<typeof SignupSchema>) {
   }
 }
 
-export async function loginUser(values: z.infer<typeof LoginSchema>) {
-  const validatedFields = LoginSchema.safeParse(values);
-  if (!validatedFields.success) {
-    return { error: "Invalid fields.", details: validatedFields.error.flatten().fieldErrors };
-  }
+// The loginUser server action is no longer the primary mechanism for login.
+// Kept for potential future use or if other server-side logic is needed on login,
+// but LoginForm.tsx now handles signInWithEmailAndPassword directly.
+// export async function loginUser(values: z.infer<typeof LoginSchema>) {
+//   const validatedFields = LoginSchema.safeParse(values);
+//   if (!validatedFields.success) {
+//     return { error: "Invalid fields.", details: validatedFields.error.flatten().fieldErrors };
+//   }
   
-  const { email, password } = validatedFields.data;
+//   const { email, password } = validatedFields.data;
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    // Optionally fetch user role here if needed immediately after login on server,
-    // but client-side onAuthStateChanged usually handles this.
-    const userDocRef = doc(db, "users", userCredential.user.uid);
-    const userDoc = await getDoc(userDocRef);
-    let role: UserRole = null;
-    if (userDoc.exists()) {
-        role = userDoc.data()?.role as UserRole || null;
-    }
-    return { success: "User logged in successfully!", uid: userCredential.user.uid, role };
-  } catch (error: any) {
-    if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
-      return { error: "Invalid email or password." };
-    }
-    console.error("Login error:", error);
-    return { error: "An unexpected error occurred during login." };
-  }
-}
+//   try {
+//     // This was trying to sign in on the server, which doesn't directly set client auth state
+//     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+//     const userDocRef = doc(db, "users", userCredential.user.uid);
+//     const userDoc = await getDoc(userDocRef);
+//     let role: UserRole = null;
+//     if (userDoc.exists()) {
+//         role = userDoc.data()?.role as UserRole || null;
+//     }
+//     return { success: "User logged in successfully!", uid: userCredential.user.uid, role };
+//   } catch (error: any) {
+//     if (error.code === "auth/user-not-found" || error.code === "auth/wrong-password" || error.code === "auth/invalid-credential") {
+//       return { error: "Invalid email or password." };
+//     }
+//     console.error("Login error:", error);
+//     return { error: "An unexpected error occurred during login." };
+//   }
+// }
 
 export async function signOutUser() {
   try {
-    // Note: firebaseSignOut only works client-side. This server action is more for conceptual structure.
+    // Note: firebaseSignOut (from firebase/auth) only works client-side. 
+    // This server action is more for conceptual structure or if you had server-side sessions.
     // Actual sign out that clears client-side session needs to be triggered from client.
-    // However, if you had server-side session management (e.g. custom tokens), you'd invalidate it here.
-    // For Firebase client SDK, the client handles signout.
-    // This action could, for example, log the server-side signOut attempt.
-    console.log("Sign out attempt on server.");
+    console.log("Sign out attempt on server (conceptual).");
     return { success: "Sign out initiated." };
   } catch (error) {
     console.error("Sign out error: ", error);

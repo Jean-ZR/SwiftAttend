@@ -5,9 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
-// useRouter ya no es necesario para la redirección principal, pero podría serlo para otras cosas si las hubiera.
-// import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation"; 
 import { useState, useTransition } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth"; // Import client-side auth function
+import { auth } from "@/lib/firebase"; // Import auth instance
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { loginUser } from "@/lib/actions/authActions";
+// loginUser server action is no longer directly called for login itself.
+// import { loginUser } from "@/lib/actions/authActions"; 
 import { useToast } from "@/hooks/use-toast";
 import { siteConfig } from "@/config/site";
 import { BookOpenCheck, Loader2 } from "lucide-react";
@@ -31,7 +33,7 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
-  // const router = useRouter(); // No es necesario para window.location.href
+  const router = useRouter(); 
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
 
@@ -43,23 +45,28 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      const result = await loginUser(values);
-      if (result.error) {
-        toast({
-          title: "Login Failed",
-          description: result.error,
-          variant: "destructive",
-        });
-      } else if (result.success) {
+      try {
+        await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
           title: "Login Successful",
           description: "Welcome back!",
         });
-        // En lugar de router.push, usamos window.location.href
-        // Esto fuerza una recarga completa, lo que puede ayudar a sincronizar el estado de AuthProvider.
-        window.location.href = "/dashboard";
+        router.push("/dashboard"); // Use client-side navigation
+      } catch (error: any) {
+        console.error("Login error:", error);
+        let errorMessage = "An unexpected error occurred during login.";
+        if (error.code === "auth/user-not-found" || 
+            error.code === "auth/wrong-password" || 
+            error.code === "auth/invalid-credential") {
+          errorMessage = "Invalid email or password.";
+        }
+        toast({
+          title: "Login Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
       }
     });
   }
