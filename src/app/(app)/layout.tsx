@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/shared/Navbar";
 import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation"; // Import usePathname
 import { useEffect } from "react";
 
 export default function AppLayout({
@@ -12,23 +12,33 @@ export default function AppLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname(); // Get current pathname
 
   useEffect(() => {
+    // If auth check is complete (loading is false) AND there's no user
     if (!loading && !user) {
+      // This layout is for authenticated routes.
+      // If we're here without a user after loading, redirect to login.
+      // The check for specific paths like '/login' isn't strictly necessary here
+      // because this layout (AppLayout) should only wrap authenticated routes.
+      // AuthLayout would handle /login, /signup.
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, pathname]); // Add pathname to dependency array
 
+  // If still loading auth state OR if loading is done but no user is authenticated
+  // (which implies a redirect to /login will happen or is in progress via the useEffect above),
+  // show a loading indicator. This prevents flashing protected content.
   if (loading || !user) {
-    // This can be a global loading spinner for app layout
     return (
       <div className="flex items-center justify-center min-h-screen">
         {/* You can use a more sophisticated loader here */}
-        <p>Loading application...</p> 
+        <p>Loading application...</p>
       </div>
     );
   }
 
+  // If we reach here, loading is false and user is non-null.
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
