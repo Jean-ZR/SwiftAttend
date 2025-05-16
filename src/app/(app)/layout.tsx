@@ -1,9 +1,11 @@
+
 "use client";
 
 import { Navbar } from "@/components/shared/Navbar";
 import { useAuth } from "@/providers/AuthProvider";
-import { useRouter, usePathname } from "next/navigation"; // Import usePathname
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { auth } from "@/lib/firebase"; // Import auth directly
 
 export default function AppLayout({
   children,
@@ -12,33 +14,40 @@ export default function AppLayout({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const pathname = usePathname(); // Get current pathname
+  const pathname = usePathname();
 
   useEffect(() => {
-    // If auth check is complete (loading is false) AND there's no user
-    if (!loading && !user) {
-      // This layout is for authenticated routes.
-      // If we're here without a user after loading, redirect to login.
-      // The check for specific paths like '/login' isn't strictly necessary here
-      // because this layout (AppLayout) should only wrap authenticated routes.
-      // AuthLayout would handle /login, /signup.
+    // If AuthProvider's loading is false (initial auth state determined) AND
+    // AuthProvider's user is null AND
+    // Firebase SDK's currentUser is also null (double-check, more immediate state)
+    // THEN redirect to login.
+    // This check prevents redirecting if AuthProvider is just a tick behind updating its user state
+    // after a successful login where auth.currentUser would already be populated.
+    if (!loading && !user && !auth.currentUser) {
       router.push("/login");
     }
-  }, [user, loading, router, pathname]); // Add pathname to dependency array
+  }, [user, loading, router, pathname]); // auth.currentUser is not a reactive dependency for useEffect here.
+                                       // Its change triggers onAuthStateChanged, which updates `user` & `loading`.
 
-  // If still loading auth state OR if loading is done but no user is authenticated
-  // (which implies a redirect to /login will happen or is in progress via the useEffect above),
-  // show a loading indicator. This prevents flashing protected content.
-  if (loading || !user) {
+  // Show loading indicator if:
+  // 1. AuthProvider is still loading (initial determination).
+  // 2. AuthProvider is done loading, its user is null, AND Firebase SDK also reports no current user.
+  //    (This means a redirect to /login is imminent or in progress via the useEffect above).
+  // If AuthProvider is done loading, its user is null, BUT Firebase SDK *has* a currentUser,
+  // it means AuthProvider is likely in the process of updating its state. In this case,
+  // we don't show the global loader and don't redirect, allowing children to render (or AuthProvider to update).
+  if (loading || (!user && !auth.currentUser)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        {/* You can use a more sophisticated loader here */}
         <p>Loading application...</p>
       </div>
     );
   }
 
-  // If we reach here, loading is false and user is non-null.
+  // If we reach here:
+  // - AuthProvider loading is false.
+  // - EITHER AuthProvider's user is non-null.
+  // - OR AuthProvider's user is null, BUT auth.currentUser is non-null (AuthProvider is catching up).
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
