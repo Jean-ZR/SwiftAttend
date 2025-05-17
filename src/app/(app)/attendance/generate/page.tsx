@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { createAttendanceSession, updateSessionStatus } from "@/lib/actions/attendanceActions";
 import { useToast } from "@/hooks/use-toast";
@@ -21,8 +21,8 @@ export default function GenerateAttendancePage() {
   const [isPending, startTransition] = useTransition();
 
   const [courseName, setCourseName] = useState("");
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [qrValue, setQrValue] = useState<string | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string>("");
+  const [qrValue, setQrValue] = useState<string>("");
   const [isSessionActive, setIsSessionActive] = useState(false);
 
   useEffect(() => {
@@ -31,25 +31,25 @@ export default function GenerateAttendancePage() {
     }
   }, [role, router]);
 
-  const generateNewCodeAndSession = () => {
+  const generateNewCodeAndSession = useCallback(() => {
     const newSessionId = uuidv4();
     setCurrentSessionId(newSessionId);
-    // Ensure window.location.origin is available (client-side)
     if (typeof window !== 'undefined') {
       const generatedQrValue = `${window.location.origin}/attendance/mark/${newSessionId}`;
       setQrValue(generatedQrValue);
     } else {
-      // Fallback or handle server-side rendering if necessary, though this page is client-side.
-      // For now, this might mean QR value is briefly null if window is not ready.
-      setQrValue(null);
+      setQrValue(""); 
     }
-    setIsSessionActive(false); // New code means session hasn't started yet in DB
-  };
+    setIsSessionActive(false); 
+  }, []);
 
   useEffect(() => {
-    generateNewCodeAndSession();
+    // Generate initial code only if no session ID is present
+    if (!currentSessionId) {
+        generateNewCodeAndSession();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Generate on initial load
+  }, [currentSessionId]); // Depend on currentSessionId to prevent re-generation on every render
 
   const handleStartOrEndSession = () => {
     if (!courseName.trim()) {
@@ -57,7 +57,7 @@ export default function GenerateAttendancePage() {
       return;
     }
     if (!currentSessionId || !qrValue) {
-      toast({ title: "Error", description: "Session ID or QR Value is missing.", variant: "destructive" });
+      toast({ title: "Error", description: "Session ID or QR Value is missing. Try generating a new code.", variant: "destructive" });
       return;
     }
     if (!user || !user.uid) {
@@ -66,12 +66,12 @@ export default function GenerateAttendancePage() {
     }
 
     startTransition(async () => {
-      if (!isSessionActive) { // Start new session
+      if (!isSessionActive) { 
         const result = await createAttendanceSession({
           sessionId: currentSessionId,
           teacherId: user.uid,
           courseName,
-          qrCodeValue: qrValue, // Corrected: use qrValue state variable
+          qrCodeValue: qrValue,
         });
 
         if (result.success) {
@@ -80,12 +80,12 @@ export default function GenerateAttendancePage() {
         } else {
           toast({ title: "Error Starting Session", description: result.error, variant: "destructive" });
         }
-      } else { // End current session
+      } else { 
         const result = await updateSessionStatus(currentSessionId, false);
         if (result.success) {
           setIsSessionActive(false);
           toast({ title: "Session Ended", description: `Session for "${courseName}" has been ended.` });
-          // Optionally generate a new code for a subsequent session
+          // Option to generate a new code for the next session immediately after ending one:
           // generateNewCodeAndSession(); 
         } else {
           toast({ title: "Error Ending Session", description: result.error, variant: "destructive" });
@@ -128,10 +128,12 @@ export default function GenerateAttendancePage() {
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSessionActive ? "End Current Session" : "Start New Attendance Session"}
           </Button>
-          <Button onClick={generateNewCodeAndSession} variant="outline" className="w-full" disabled={isSessionActive || isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Generate New Code (Discards Current Unstarted)
-          </Button>
+          {!isSessionActive && ( // Show button to generate new code only if session is not active
+            <Button onClick={generateNewCodeAndSession} variant="outline" className="w-full" disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Generate New Code (Discards Current Unstarted)
+            </Button>
+          )}
           <p className="text-xs text-muted-foreground text-center">
             {isSessionActive 
               ? `Session for "${courseName}" is active. Students can use the code/QR.`

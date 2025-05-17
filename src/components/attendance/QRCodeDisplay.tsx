@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
-
-// import QRCode from 'qrcode.react'; // Uncomment if/when qrcode.react is installed
+import QRCode from 'qrcode.react'; // Import the QR Code component
 
 interface QRCodeDisplayProps {
   value: string; 
@@ -55,23 +54,14 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
       </CardHeader>
       <CardContent className="flex flex-col items-center space-y-4">
         <div 
-          data-ai-hint="QR code" 
-          className="w-60 h-60 bg-muted flex flex-col items-center justify-center rounded-lg border border-dashed border-primary p-2 text-center"
-          aria-label={`QR Code placeholder for attendance. Value: ${value}`}
+          className="w-60 h-60 bg-card flex flex-col items-center justify-center rounded-lg border border-dashed border-primary p-4"
+          aria-label={`QR Code for attendance. Value: ${value}`}
         >
-          {/* Placeholder for QR Code. Replace with actual QR component when ready. */}
-          {/* Example with qrcode.react (uncomment when installed and imported): */}
-          {/* value ? <QRCode value={value} size={224} level="H" /> : <p>Generating QR...</p> */}
-          
-          <p className="text-xs text-muted-foreground mb-2">
-            (This is a placeholder for the QR Code image)
-          </p>
-          <p className="text-sm font-semibold text-foreground break-all">
-            QR Value (URL): <br /> {value || "Generating URL..."}
-          </p>
-           <p className="text-xs text-muted-foreground mt-2">
-            A library like 'qrcode.react' would render the actual QR image here.
-          </p>
+          {value ? (
+            <QRCode value={value} size={208} level="H" bgColor="var(--card)" fgColor="var(--foreground)" />
+          ) : (
+            <p className="text-muted-foreground">Generating QR...</p>
+          )}
         </div>
         
         <div className="w-full space-y-1">
@@ -104,5 +94,3 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
     </Card>
   );
 }
-
-    
