@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { auth, db } from "@/lib/firebase"; // Assuming client SDK for auth for now
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, getDocs, doc, updateDoc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, setDoc, serverTimestamp, getDoc, Timestamp } from "firebase/firestore";
 import type { UserRole } from "@/providers/AuthProvider";
 
 // Schema for admin creating a user
@@ -39,7 +39,16 @@ export async function getAllUsers(adminUserId: string) {
   try {
     const usersCollection = collection(db, "users");
     const usersSnapshot = await getDocs(usersCollection);
-    const usersList = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const usersList = usersSnapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      // Convert Timestamp to string if it exists
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt;
+      return { 
+        id: docSnap.id, 
+        ...data,
+        createdAt 
+      };
+    });
     return { success: true, users: usersList };
   } catch (error) {
     console.error("Error fetching all users:", error);

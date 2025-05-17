@@ -29,7 +29,7 @@ export interface UserData {
   displayName?: string;
   email?: string;
   role?: UserRole;
-  createdAt?: any; // Firestore Timestamp or serialized string
+  createdAt?: string; // Changed from 'any' to 'string'
   // Add other fields as necessary
 }
 
@@ -78,6 +78,7 @@ export function UserManagementTable({ users, onUserListChanged }: UserManagement
           <TableHead>Display Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Role</TableHead>
+          {/* Optional: <TableHead>Created At</TableHead> */}
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -106,11 +107,12 @@ export function UserManagementTable({ users, onUserListChanged }: UserManagement
                 </Select>
               )}
             </TableCell>
+            {/* Optional: <TableCell>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</TableCell> */}
             <TableCell className="text-right">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => handleRoleChange(user.id, user.role!)} // Re-triggers submit with current val if select is used
+                onClick={() => user.role && handleRoleChange(user.id, user.role)} 
                 disabled={isUpdating && updatingUserId === user.id || adminUser?.uid === user.id}
               >
                 {(isUpdating && updatingUserId === user.id) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

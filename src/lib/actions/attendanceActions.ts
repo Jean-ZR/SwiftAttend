@@ -3,7 +3,7 @@
 
 import { z } from "zod";
 import { auth, db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc, updateDoc, arrayUnion, Timestamp } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc, updateDoc, arrayUnion, Timestamp, orderBy, setDoc } from "firebase/firestore";
 import type { UserRole } from "@/providers/AuthProvider";
 
 const CreateSessionSchema = z.object({
@@ -87,12 +87,6 @@ export async function markStudentAttendance(values: z.infer<typeof MarkAttendanc
       status: "present", // default status
     });
 
-    // Optionally, update the session document with the student ID (if needed for quick checks)
-    // For simplicity, we'll rely on querying attendanceRecords for now.
-    // await updateDoc(sessionRef, {
-    //   attendees: arrayUnion(studentId) 
-    // });
-
     return { success: "Attendance marked successfully!", recordId: recordRef.id };
   } catch (error) {
     console.error("Error marking attendance:", error);
@@ -111,7 +105,17 @@ export async function getAttendanceSession(sessionId: string) {
     if (!sessionDoc.exists()) {
       return { error: "Attendance session not found." };
     }
-    return { success: true, session: { id: sessionDoc.id, ...sessionDoc.data() } };
+    const data = sessionDoc.data();
+    const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt;
+    
+    return { 
+      success: true, 
+      session: { 
+        id: sessionDoc.id, 
+        ...data,
+        createdAt 
+      } 
+    };
   } catch (error) {
     console.error("Error fetching attendance session:", error);
     return { error: "Could not fetch attendance session." };
@@ -125,15 +129,15 @@ export async function getStudentAttendanceHistory(studentId: string) {
   try {
     const q = query(collection(db, "attendanceRecords"), where("studentId", "==", studentId), orderBy("timestamp", "desc"));
     const querySnapshot = await getDocs(q);
-    const records = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-    // Fetch course names for each session
-    const recordsWithCourseNames = await Promise.all(records.map(async (record) => {
-      const sessionRes = await getAttendanceSession(record.sessionId);
+    const recordsWithCourseNames = await Promise.all(querySnapshot.docs.map(async (docSnap) => {
+      const record = docSnap.data();
+      const sessionRes = await getAttendanceSession(record.sessionId); // getAttendanceSession now serializes its own createdAt
       return {
+        id: docSnap.id,
         ...record,
         courseName: sessionRes.session?.courseName || "Unknown Course",
-        timestamp: (record.timestamp as Timestamp)?.toDate().toLocaleDateString(),
+        timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : record.timestamp,
       };
     }));
 
@@ -151,11 +155,14 @@ export async function getTeacherAttendanceSessions(teacherId: string) {
   try {
     const q = query(collection(db, "attendanceSessions"), where("teacherId", "==", teacherId), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    const sessions = querySnapshot.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data(),
-      createdAt: (doc.data().createdAt as Timestamp)?.toDate().toLocaleString(),
-    }));
+    const sessions = querySnapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      return { 
+        id: docSnap.id, 
+        ...data,
+        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt,
+      };
+    });
     return { success: true, sessions };
   } catch (error) {
     console.error("Error fetching teacher attendance sessions:", error);
@@ -170,11 +177,14 @@ export async function getAttendanceRecordsForSession(sessionId: string) {
   try {
     const q = query(collection(db, "attendanceRecords"), where("sessionId", "==", sessionId), orderBy("timestamp", "asc"));
     const querySnapshot = await getDocs(q);
-    const records = querySnapshot.docs.map(doc => ({ 
-      id: doc.id, 
-      ...doc.data(),
-      timestamp: (doc.data().timestamp as Timestamp)?.toDate().toLocaleTimeString(),
-    }));
+    const records = querySnapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      return { 
+        id: docSnap.id, 
+        ...data,
+        timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toDate().toLocaleTimeString() : data.timestamp,
+      };
+    });
     return { success: true, records };
   } catch (error) {
     console.error("Error fetching attendance records for session:", error);

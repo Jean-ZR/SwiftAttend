@@ -9,14 +9,15 @@ import { useState, useTransition, useEffect } from "react";
 import { Loader2, CheckCircle, XCircle, Info } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { getAttendanceSession, markStudentAttendance } from "@/lib/actions/attendanceActions";
-import type { Timestamp } from "firebase/firestore";
+// Removed direct Timestamp import as it will be string now
+// import type { Timestamp } from "firebase/firestore"; 
 
 interface SessionData {
   id: string;
   courseName: string;
   teacherId: string;
   active: boolean;
-  createdAt: Timestamp;
+  createdAt: string; // Changed from Timestamp to string
   // other fields if any
 }
 
