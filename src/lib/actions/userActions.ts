@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { auth, db } from "@/lib/firebase"; // Assuming client SDK for auth for now
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, getDocs, doc, updateDoc, setDoc, serverTimestamp, getDoc, Timestamp } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, setDoc, serverTimestamp, getDoc, Timestamp, query, where,getCountFromServer } from "firebase/firestore";
 import type { UserRole } from "@/providers/AuthProvider";
 
 // Schema for admin creating a user
@@ -42,7 +42,7 @@ export async function getAllUsers(adminUserId: string) {
     const usersList = usersSnapshot.docs.map(docSnap => {
       const data = docSnap.data();
       // Convert Timestamp to string if it exists
-      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt;
+      const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : String(data.createdAt);
       return { 
         id: docSnap.id, 
         ...data,
@@ -113,5 +113,44 @@ export async function adminCreateUser(values: z.infer<typeof AdminCreateUserSche
     }
     console.error("Admin Create User error:", error);
     return { error: "An unexpected error occurred during user creation." };
+  }
+}
+
+export async function getUserStats(adminUserId: string) {
+  if (!(await verifyAdmin(adminUserId))) {
+    return { error: "Unauthorized. Admin privileges required." };
+  }
+
+  try {
+    const usersCollectionRef = collection(db, "users");
+    
+    const totalUsersSnapshot = await getCountFromServer(usersCollectionRef);
+    const totalUsers = totalUsersSnapshot.data().count;
+
+    const teachersQuery = query(usersCollectionRef, where("role", "==", "teacher"));
+    const totalTeachersSnapshot = await getCountFromServer(teachersQuery);
+    const totalTeachers = totalTeachersSnapshot.data().count;
+
+    const studentsQuery = query(usersCollectionRef, where("role", "==", "student"));
+    const totalStudentsSnapshot = await getCountFromServer(studentsQuery);
+    const totalStudents = totalStudentsSnapshot.data().count;
+    
+    const adminsQuery = query(usersCollectionRef, where("role", "==", "admin"));
+    const totalAdminsSnapshot = await getCountFromServer(adminsQuery);
+    const totalAdmins = totalAdminsSnapshot.data().count;
+
+
+    return { 
+      success: true, 
+      stats: { 
+        totalUsers, 
+        totalTeachers, 
+        totalStudents,
+        totalAdmins 
+      } 
+    };
+  } catch (error) {
+    console.error("Error fetching user stats:", error);
+    return { error: "Could not fetch user statistics." };
   }
 }
