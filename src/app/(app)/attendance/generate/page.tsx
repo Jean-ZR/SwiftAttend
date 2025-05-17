@@ -71,7 +71,7 @@ export default function GenerateAttendancePage() {
           sessionId: currentSessionId,
           teacherId: user.uid,
           courseName,
-          qrCodeValue,
+          qrCodeValue: qrValue, // Corrected: use qrValue state variable
         });
 
         if (result.success) {
