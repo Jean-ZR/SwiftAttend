@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, BarChart3, Settings2, UserCog, UserGraduate, ShieldCheck } from "lucide-react";
+import { Users, UserCheck, BarChart3, Settings2, UserCog, GraduationCap, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ export function AdminDashboard() {
   const statCards = [
     { title: "Total Users", value: stats?.totalUsers, icon: <Users className="h-6 w-6 text-primary" />, description: "All registered users" },
     { title: "Total Teachers", value: stats?.totalTeachers, icon: <UserCheck className="h-6 w-6 text-primary" />, description: "Registered teachers" },
-    { title: "Total Students", value: stats?.totalStudents, icon: <UserGraduate className="h-6 w-6 text-primary" />, description: "Registered students" },
+    { title: "Total Students", value: stats?.totalStudents, icon: <GraduationCap className="h-6 w-6 text-primary" />, description: "Registered students" },
     { title: "Total Admins", value: stats?.totalAdmins, icon: <ShieldCheck className="h-6 w-6 text-primary" />, description: "Registered administrators" },
     { title: "Overall Attendance", value: "N/A", icon: <BarChart3 className="h-6 w-6 text-primary" />, description: "Average attendance rate (Coming Soon)" },
   ];
