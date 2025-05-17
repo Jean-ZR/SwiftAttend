@@ -106,7 +106,7 @@ export async function getAttendanceSession(sessionId: string) {
       return { error: "Attendance session not found." };
     }
     const data = sessionDoc.data();
-    const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt;
+    const createdAt = data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : String(data.createdAt);
     
     return { 
       success: true, 
@@ -132,12 +132,16 @@ export async function getStudentAttendanceHistory(studentId: string) {
     
     const recordsWithCourseNames = await Promise.all(querySnapshot.docs.map(async (docSnap) => {
       const record = docSnap.data();
-      const sessionRes = await getAttendanceSession(record.sessionId); // getAttendanceSession now serializes its own createdAt
+      const sessionRes = await getAttendanceSession(record.sessionId); 
+      const createdAtFromSession = sessionRes.session?.createdAt instanceof Timestamp 
+                                   ? sessionRes.session.createdAt.toDate().toLocaleString() 
+                                   : String(sessionRes.session?.createdAt);
       return {
         id: docSnap.id,
         ...record,
         courseName: sessionRes.session?.courseName || "Unknown Course",
-        timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : record.timestamp,
+        timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : String(record.timestamp),
+        sessionCreatedAt: createdAtFromSession, 
       };
     }));
 
@@ -157,16 +161,33 @@ export async function getTeacherAttendanceSessions(teacherId: string) {
     const querySnapshot = await getDocs(q);
     const sessions = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
+      let createdAtStr = data.createdAt;
+      if (data.createdAt instanceof Timestamp) {
+        createdAtStr = data.createdAt.toDate().toLocaleString();
+      } else if (typeof data.createdAt === 'object' && data.createdAt?.seconds) {
+        createdAtStr = new Timestamp(data.createdAt.seconds, data.createdAt.nanoseconds).toDate().toLocaleString();
+      }
       return { 
         id: docSnap.id, 
         ...data,
-        createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate().toLocaleString() : data.createdAt,
+        createdAt: createdAtStr,
       };
     });
     return { success: true, sessions };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching teacher attendance sessions:", error);
-    return { error: "Could not fetch teacher sessions." };
+    let detailedError = "Could not fetch teacher sessions.";
+    if (error.message) {
+      detailedError += ` Firebase: ${error.message}`;
+    }
+    if (error.code) {
+      detailedError += ` (Code: ${error.code})`;
+      // Check for Firestore's "failed-precondition" which often indicates a missing index
+      if (error.code === 'failed-precondition' && error.message && error.message.toLowerCase().includes('index')) {
+        detailedError += " This often indicates a missing Firestore index. Please check your Firebase console for a link to create it.";
+      }
+    }
+    return { error: detailedError };
   }
 }
 
@@ -179,10 +200,16 @@ export async function getAttendanceRecordsForSession(sessionId: string) {
     const querySnapshot = await getDocs(q);
     const records = querySnapshot.docs.map(docSnap => {
       const data = docSnap.data();
+      let timestampStr = data.timestamp;
+      if (data.timestamp instanceof Timestamp) {
+        timestampStr = data.timestamp.toDate().toLocaleTimeString();
+      } else if (typeof data.timestamp === 'object' && data.timestamp?.seconds) {
+         timestampStr = new Timestamp(data.timestamp.seconds, data.timestamp.nanoseconds).toDate().toLocaleTimeString();
+      }
       return { 
         id: docSnap.id, 
         ...data,
-        timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toDate().toLocaleTimeString() : data.timestamp,
+        timestamp: timestampStr,
       };
     });
     return { success: true, records };
