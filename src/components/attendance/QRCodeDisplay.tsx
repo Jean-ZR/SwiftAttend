@@ -6,14 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label"; // Added import for Label
+import { Label } from "@/components/ui/label";
 
-// Import qrcode.react if you want to render actual QR codes
-// import QRCode from 'qrcode.react'; 
+// import QRCode from 'qrcode.react'; // Uncomment if/when qrcode.react is installed
 
 interface QRCodeDisplayProps {
-  value: string; // This will be the full URL or the session ID to display
-  sessionId: string; // The actual session ID for display and copying
+  value: string; 
+  sessionId: string; 
   onRefresh?: () => void;
   isActive?: boolean;
 }
@@ -50,20 +49,28 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
         <CardTitle>{isActive ? "Active Session" : "New Session"} QR Code</CardTitle>
         <CardDescription>
             {isActive 
-            ? "Students can scan this code or use the ID to mark attendance." 
-            : "Once started, students can use this to mark attendance."}
+            ? "Scan this code or use the ID/URL to mark attendance." 
+            : "Once started, this QR can be used for attendance."}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col items-center space-y-4">
         <div 
-          data-ai-hint="QR code" // For AI image generation hint
-          className="w-60 h-60 bg-muted flex items-center justify-center rounded-lg border border-dashed border-primary p-2"
-          aria-label={`QR Code for attendance. Value: ${value}`}
+          data-ai-hint="QR code" 
+          className="w-60 h-60 bg-muted flex flex-col items-center justify-center rounded-lg border border-dashed border-primary p-2 text-center"
+          aria-label={`QR Code placeholder for attendance. Value: ${value}`}
         >
-          {/* Replace this with <QRCode value={value} size={224} level="H" /> if using qrcode.react */}
-          <p className="text-center text-muted-foreground text-xs">
-            (QR Code for: <br/> <strong className="text-foreground break-all">{value}</strong>)
-            <br /> A library like 'qrcode.react' would render the actual QR image here.
+          {/* Placeholder for QR Code. Replace with actual QR component when ready. */}
+          {/* Example with qrcode.react (uncomment when installed and imported): */}
+          {/* value ? <QRCode value={value} size={224} level="H" /> : <p>Generating QR...</p> */}
+          
+          <p className="text-xs text-muted-foreground mb-2">
+            (This is a placeholder for the QR Code image)
+          </p>
+          <p className="text-sm font-semibold text-foreground break-all">
+            QR Value (URL): <br /> {value || "Generating URL..."}
+          </p>
+           <p className="text-xs text-muted-foreground mt-2">
+            A library like 'qrcode.react' would render the actual QR image here.
           </p>
         </div>
         
@@ -87,7 +94,7 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
           </div>
         </div>
 
-        {onRefresh && !isActive && ( // Only allow refresh if session is not active
+        {onRefresh && !isActive && ( 
           <Button onClick={onRefresh} variant="outline" className="w-full">
             <RefreshCw className="mr-2 h-4 w-4" />
             Generate New Code & QR
@@ -97,3 +104,5 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
     </Card>
   );
 }
+
+    

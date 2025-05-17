@@ -9,16 +9,13 @@ import { useState, useTransition, useEffect } from "react";
 import { Loader2, CheckCircle, XCircle, Info } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { getAttendanceSession, markStudentAttendance } from "@/lib/actions/attendanceActions";
-// Removed direct Timestamp import as it will be string now
-// import type { Timestamp } from "firebase/firestore"; 
 
 interface SessionData {
   id: string;
   courseName: string;
   teacherId: string;
   active: boolean;
-  createdAt: string; // Changed from Timestamp to string
-  // other fields if any
+  createdAt: string; 
 }
 
 export default function MarkAttendanceForSessionPage() {
@@ -41,13 +38,12 @@ export default function MarkAttendanceForSessionPage() {
     if (!sessionId) {
       setValidationError("Session ID is missing from URL.");
       toast({ title: "Error", description: "No session ID provided.", variant: "destructive" });
-      // router.push("/attendance/mark"); // Redirect if no session ID
       return;
     }
 
-    if (role && role !== "student") {
-        setValidationError("This page is for students to mark attendance.");
-        // No need to toast here, UI will show message
+    // Allow students and teachers to access this page
+    if (role && role !== "student" && role !== "teacher") {
+        setValidationError(`Access Denied: This page is for students and teachers to mark attendance. Your role is: ${role}.`);
         return;
     }
     
@@ -82,8 +78,8 @@ export default function MarkAttendanceForSessionPage() {
 
       const result = await markStudentAttendance({
         sessionId: sessionDetails.id,
-        studentId: user.uid,
-        studentName: user.displayName || user.email || "Unknown Student",
+        studentId: user.uid, // For teachers, this will be their UID
+        studentName: user.displayName || user.email || "Unknown User", // Name of student or teacher
       });
 
       if (result.success) {
@@ -102,14 +98,14 @@ export default function MarkAttendanceForSessionPage() {
     });
   };
   
-  if (role && role !== "student") {
+  if (role && role !== "student" && role !== "teacher") {
       return (
         <div className="flex flex-col items-center justify-center py-12">
             <Card className="w-full max-w-md shadow-xl p-6">
                 <div className="text-center space-y-3">
                     <Info className="h-12 w-12 text-blue-500 mx-auto" />
                     <p className="font-semibold">Page Access Denied</p>
-                    <p className="text-sm text-muted-foreground">This page is for students to mark attendance.</p>
+                    <p className="text-sm text-muted-foreground">{validationError || `This page is for students and teachers to mark attendance. Your role is: ${role}.`}</p>
                     <Button onClick={() => router.push('/dashboard')} variant="outline">Go to Dashboard</Button>
                 </div>
             </Card>
@@ -126,7 +122,7 @@ export default function MarkAttendanceForSessionPage() {
     );
   }
 
-  if (validationError) {
+  if (validationError && !sessionDetails) { // Only show full error page if session details are not loaded
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <Card className="w-full max-w-md shadow-xl">
@@ -136,7 +132,9 @@ export default function MarkAttendanceForSessionPage() {
           <CardContent className="text-center">
             <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
             <p className="text-muted-foreground">{validationError}</p>
-            <Button onClick={() => router.push('/attendance/mark')} variant="outline" className="mt-4">Try a different code</Button>
+            <Button onClick={() => router.push(role === 'student' ? '/attendance/mark' : '/attendance/generate')} variant="outline" className="mt-4">
+                {role === 'student' ? 'Try a different code' : 'Go to Session Management'}
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -164,7 +162,7 @@ export default function MarkAttendanceForSessionPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Mark Attendance</CardTitle>
-          <CardDescription>Course: {sessionDetails.courseName}</CardDescription>
+          <CardDescription>Session: {sessionDetails.courseName}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {submissionStatus === "success" ? (
@@ -186,8 +184,14 @@ export default function MarkAttendanceForSessionPage() {
                 You are marking attendance for the session: <strong className="text-foreground">{sessionDetails.courseName}</strong>.
               </p>
               <p className="text-center text-sm text-muted-foreground">
-                Student: {user?.displayName || user?.email}
+                User: {user?.displayName || user?.email} ({role})
               </p>
+              {validationError && ( // Show validation error here if it's just a warning (e.g., session not active but still showing page)
+                 <div className="text-center p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-md flex items-center justify-center text-yellow-600 dark:text-yellow-400">
+                    <Info className="h-5 w-5 mr-2" />
+                    <p className="text-sm">{validationError}</p>
+                 </div>
+              )}
               {submissionStatus === "error" && submissionMessage && (
                 <div className="text-center p-3 bg-red-100 dark:bg-red-900/30 rounded-md flex items-center justify-center text-red-600 dark:text-red-400">
                   <XCircle className="h-5 w-5 mr-2" />
@@ -197,7 +201,7 @@ export default function MarkAttendanceForSessionPage() {
               <Button 
                 onClick={handleSubmitAttendance} 
                 className="w-full" 
-                disabled={isSubmissionPending || !user}
+                disabled={isSubmissionPending || !user || !!validationError} // Disable if there's a validation error preventing submission
               >
                 {isSubmissionPending ? (
                   <>
@@ -220,3 +224,5 @@ export default function MarkAttendanceForSessionPage() {
     </div>
   );
 }
+
+    
