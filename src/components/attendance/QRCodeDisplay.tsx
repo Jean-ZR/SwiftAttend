@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label"; // Added import for Label
 
 // Import qrcode.react if you want to render actual QR codes
 // import QRCode from 'qrcode.react'; 
@@ -96,4 +97,3 @@ export function QRCodeDisplay({ value, sessionId, onRefresh, isActive }: QRCodeD
     </Card>
   );
 }
-
