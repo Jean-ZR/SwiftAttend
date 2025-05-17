@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,10 +17,10 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, User, Settings, LayoutDashboard } from "lucide-react";
+import { LogOut, User, Settings, LayoutDashboard, Users, QrCode, ListChecks, ScanLine, CalendarCheck2 } from "lucide-react";
 
 export function UserNav() {
-  const { user } = useAuth();
+  const { user, role } = useAuth(); // Added role here
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -60,9 +61,9 @@ export function UserNav() {
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
-            {user.role && (
+            {role && (
               <p className="text-xs leading-none text-muted-foreground capitalize">
-                Role: {user.role}
+                Role: {role}
               </p>
             )}
           </div>
@@ -75,13 +76,59 @@ export function UserNav() {
               <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>
+
+          {/* Admin specific links */}
+          {role === "admin" && (
+            <DropdownMenuItem asChild>
+              <Link href="/admin/user-management">
+                <Users className="mr-2 h-4 w-4" />
+                <span>User Management</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {/* Teacher specific links */}
+          {role === "teacher" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/attendance/generate">
+                  <QrCode className="mr-2 h-4 w-4" />
+                  <span>Manage Sessions</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/teacher/attendance-history">
+                  <ListChecks className="mr-2 h-4 w-4" />
+                  <span>Attendance History</span>
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+
+          {/* Student specific links */}
+          {role === "student" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/attendance/mark">
+                  <ScanLine className="mr-2 h-4 w-4" />
+                  <span>Mark Attendance</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/student/my-attendance">
+                  <CalendarCheck2 className="mr-2 h-4 w-4" />
+                  <span>My Attendance</span>
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+          
           <DropdownMenuItem asChild>
             <Link href="/settings">
                <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>
           </DropdownMenuItem>
-          {/* Add other items like Profile if needed */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
