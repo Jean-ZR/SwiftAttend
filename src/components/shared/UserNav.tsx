@@ -17,10 +17,10 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, User, Settings, LayoutDashboard, Users, QrCode, ListChecks, ScanLine, CalendarCheck2 } from "lucide-react";
+import { LogOut, User, Settings, LayoutDashboard, Users, QrCode, ListChecks, ScanLine, CalendarCheck2, UserCog } from "lucide-react";
 
 export function UserNav() {
-  const { user, role } = useAuth(); // Added role here
+  const { user, role } = useAuth(); 
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -77,14 +77,28 @@ export function UserNav() {
             </Link>
           </DropdownMenuItem>
 
-          {/* Admin specific links */}
+          {/* Admin specific links - Reordered for priority */}
           {role === "admin" && (
-            <DropdownMenuItem asChild>
-              <Link href="/admin/user-management">
-                <Users className="mr-2 h-4 w-4" />
-                <span>User Management</span>
-              </Link>
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/admin/user-management">
+                  <UserCog className="mr-2 h-4 w-4" />
+                  <span>User Management</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/attendance/generate">
+                  <QrCode className="mr-2 h-4 w-4" />
+                  <span>Manage Sessions</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/teacher/attendance-history">
+                  <ListChecks className="mr-2 h-4 w-4" />
+                  <span>Attendance History</span>
+                </Link>
+              </DropdownMenuItem>
+            </>
           )}
 
           {/* Teacher specific links */}

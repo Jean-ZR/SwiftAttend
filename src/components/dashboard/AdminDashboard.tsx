@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, BarChart3, Settings2, UserCog, GraduationCap, ShieldCheck } from "lucide-react";
+import { Users, UserCheck, BarChart3, Settings2, UserCog, GraduationCap, ShieldCheck, QrCode, ListChecks } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,6 @@ export function AdminDashboard() {
     { title: "Total Teachers", value: stats?.totalTeachers, icon: <UserCheck className="h-6 w-6 text-primary" />, description: "Registered teachers" },
     { title: "Total Students", value: stats?.totalStudents, icon: <GraduationCap className="h-6 w-6 text-primary" />, description: "Registered students" },
     { title: "Total Admins", value: stats?.totalAdmins, icon: <ShieldCheck className="h-6 w-6 text-primary" />, description: "Registered administrators" },
-    { title: "Overall Attendance", value: "N/A", icon: <BarChart3 className="h-6 w-6 text-primary" />, description: "Average attendance rate (Coming Soon)" },
   ];
 
 
@@ -67,7 +66,7 @@ export function AdminDashboard() {
               className="w-full h-auto rounded-lg mb-6 object-cover"
               data-ai-hint="control panel interface"
             />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 mb-6">
             {statCards.map((stat) => (
               <Card key={stat.title}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -92,19 +91,33 @@ export function AdminDashboard() {
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <Link href="/admin/user-management" passHref>
               <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
                 <UserCog className="h-10 w-10 mb-2 text-primary" />
                 <span className="font-semibold">Manage Users</span>
-                <span className="text-xs text-muted-foreground">View, edit roles, create users.</span>
+                <span className="text-xs text-muted-foreground">View, edit roles, create.</span>
+              </Button>
+            </Link>
+            <Link href="/attendance/generate" passHref>
+              <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
+                <QrCode className="h-10 w-10 mb-2 text-primary" />
+                <span className="font-semibold">Manage Sessions</span>
+                <span className="text-xs text-muted-foreground">Start/End & QR.</span>
+              </Button>
+            </Link>
+            <Link href="/teacher/attendance-history" passHref>
+              <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
+                <ListChecks className="h-10 w-10 mb-2 text-primary" />
+                <span className="font-semibold">View Attendance</span>
+                <span className="text-xs text-muted-foreground">Session history.</span>
               </Button>
             </Link>
             <Link href="/settings" passHref>
               <Button variant="outline" className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
                   <Settings2 className="h-10 w-10 mb-2 text-primary" />
                   <span className="font-semibold">System Settings</span>
-                  <span className="text-xs text-muted-foreground">Configure application settings.</span>
+                  <span className="text-xs text-muted-foreground">App configuration.</span>
               </Button>
             </Link>
             <Button variant="outline" disabled className="w-full h-28 flex flex-col items-center justify-center p-4 shadow hover:shadow-md transition-shadow text-left">
