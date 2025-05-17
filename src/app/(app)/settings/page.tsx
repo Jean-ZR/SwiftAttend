@@ -1,3 +1,4 @@
+
 "use client";
 
 import { ModeToggle } from "@/components/ModeToggle";
@@ -7,16 +8,24 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/AuthProvider";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { updateUserDisplayName } from "@/lib/actions/userActions";
+import { Loader2 } from "lucide-react";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth(); // Renamed loading to authLoading to avoid conflict
   const { toast } = useToast();
-  const [displayName, setDisplayName] = useState(user?.displayName || "");
-  const [isSaving, setIsSaving] = useState(false);
+  
+  const [displayName, setDisplayName] = useState("");
+  const [isSaving, startSavingTransition] = useTransition();
 
-  // Placeholder for password change functionality
+  useEffect(() => {
+    if (user?.displayName) {
+      setDisplayName(user.displayName);
+    }
+  }, [user]);
+
   const handleChangePassword = () => {
     toast({
       title: "Feature Coming Soon",
@@ -24,22 +33,41 @@ export default function SettingsPage() {
     });
   };
   
-  // Placeholder for profile update
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // In a real app, update Firebase Auth profile and Firestore user document
-    // Example: await updateProfile(auth.currentUser, { displayName });
-    // await updateDoc(doc(db, "users", user.uid), { displayName });
-    toast({
-      title: "Profile Updated",
-      description: "Your display name has been updated (simulated).",
+    if (!user || !user.uid) {
+      toast({ title: "Error", description: "User not authenticated.", variant: "destructive" });
+      return;
+    }
+    if (!displayName.trim() || displayName.trim() === user.displayName) {
+      toast({ title: "No Changes", description: "Display name is the same or empty.", variant: "default" });
+      return;
+    }
+
+    startSavingTransition(async () => {
+      const result = await updateUserDisplayName({ userId: user.uid, newDisplayName: displayName.trim() });
+      if (result.success) {
+        toast({
+          title: "Profile Updated",
+          description: result.success,
+        });
+        // Optionally, trigger a re-fetch or update of AuthProvider's user state here
+        // For simplicity, Firebase Auth's onAuthStateChanged should eventually pick it up
+        // or user can see changes on next login/refresh.
+      } else {
+        toast({
+          title: "Update Failed",
+          description: result.error,
+          variant: "destructive",
+        });
+      }
     });
-    setIsSaving(false);
   };
 
+  if (authLoading) {
+    // You can add a skeleton loader here if desired
+    return <p>Loading settings...</p>;
+  }
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -71,7 +99,7 @@ export default function SettingsPage() {
             <form onSubmit={handleProfileUpdate} className="space-y-4">
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={user.email || ""} disabled className="mt-1" />
+                <Input id="email" type="email" value={user.email || ""} disabled className="mt-1 bg-muted/50" />
                 <p className="text-xs text-muted-foreground mt-1">Email address cannot be changed here.</p>
               </div>
               <div>
@@ -82,10 +110,12 @@ export default function SettingsPage() {
                   onChange={(e) => setDisplayName(e.target.value)} 
                   className="mt-1"
                   disabled={isSaving}
+                  placeholder="Your name"
                 />
               </div>
-              <Button type="submit" disabled={isSaving || displayName === (user.displayName || "")}>
-                {isSaving ? "Saving..." : "Save Profile Changes"}
+              <Button type="submit" disabled={isSaving || !displayName.trim() || displayName.trim() === (user.displayName || "")}>
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Profile Changes
               </Button>
             </form>
             
@@ -113,7 +143,6 @@ export default function SettingsPage() {
           </p>
         </CardContent>
       </Card>
-
     </div>
   );
 }
