@@ -18,6 +18,7 @@ import {
 import { siteConfig } from "@/config/site";
 import { BookOpenCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link"; // Added Link import
 
 export default function AppLayout({
   children,
