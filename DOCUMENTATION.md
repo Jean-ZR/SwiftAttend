@@ -14,6 +14,7 @@ La documentación detallada se ha dividido en los siguientes archivos, ubicados 
 *   [5. Módulo de Configuración](./documentation/05-settings.md)
 *   [6. Estructura de Firebase Firestore](./documentation/06-firestore-structure.md)
 *   [7. Posibles Mejoras y Futuras Funcionalidades](./documentation/07-future-improvements.md)
+*   [8. Configuración de Firebase y Variables de Entorno](./documentation/08-firebase-setup.md)
 
 Se recomienda leer los documentos en orden para una comprensión completa del sistema.
 
