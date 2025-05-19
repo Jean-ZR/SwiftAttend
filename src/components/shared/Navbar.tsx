@@ -1,44 +1,40 @@
+
 "use client";
 
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { ModeToggle } from "@/components/ModeToggle"; // This component might also need to be a client component if it uses client hooks/APIs
+import { ModeToggle } from "@/components/ModeToggle";
 import { UserNav } from "@/components/shared/UserNav";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/providers/AuthProvider"; // Client component hook
+import { useAuth } from "@/providers/AuthProvider";
 import { BookOpenCheck } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar"; // Import SidebarTrigger
 
-// Since useAuth is a client hook, Navbar must be a client component or pass auth state down.
-// For simplicity, making Navbar a client component.
 export function Navbar() {
   const { user, loading } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <BookOpenCheck className="h-6 w-6 text-primary" />
-          <span className="font-bold sm:inline-block">
-            {siteConfig.name}
-          </span>
-        </Link>
-        <nav className="flex flex-1 items-center space-x-6 text-sm font-medium">
-          {user && siteConfig.mainNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
-            >
-              {item.title}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-4 md:px-6">
+        <div className="mr-4 md:mr-6 flex items-center">
+          <SidebarTrigger className="mr-2 md:hidden" /> {/* Visible on mobile */}
+          <Link href="/dashboard" className="hidden md:flex items-center space-x-2"> {/* Logo hidden on mobile, shown on desktop */}
+            <BookOpenCheck className="h-6 w-6 text-primary" />
+            <span className="font-bold">
+              {siteConfig.name}
+            </span>
+          </Link>
+        </div>
+        
+        {/* Placeholder for future search bar or other nav items */}
+        <div className="flex-1"></div>
+
+        <div className="flex items-center space-x-3 md:space-x-4">
           <ModeToggle />
           {loading ? null : user ? (
             <UserNav />
           ) : (
-            <Button asChild>
+            <Button asChild size="sm">
               <Link href="/login">Login</Link>
             </Button>
           )}
