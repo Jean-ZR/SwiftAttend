@@ -286,6 +286,94 @@ body {
     --sidebar-border: 35 60% 88%;
     --sidebar-ring: 38 90% 60%;
   }
+
+  /* Dark Red Theme */
+  html.dark-red {
+    --background: 0 40% 10%; /* Very dark maroon */
+    --foreground: 0 10% 92%; /* Light warm gray */
+    --card: 0 40% 12%; /* Darker maroon card */
+    --card-foreground: 0 10% 92%;
+    --popover: 0 40% 12%;
+    --popover-foreground: 0 10% 92%;
+
+    --primary: 0 70% 55%; /* Vibrant red */
+    --primary-foreground: 0 0% 98%; /* White */
+
+    --secondary: 0 30% 20%; /* Dark muted red */
+    --secondary-foreground: 0 20% 80%; /* Lighter red/gray for text */
+
+    --muted: 0 25% 15%; /* Very dark, almost black-red */
+    --muted-foreground: 0 15% 60%; /* Medium gray-red */
+
+    --accent: 30 80% 50%; /* Fiery orange accent */
+    --accent-foreground: 0 0% 10%; /* Black or very dark red */
+
+    --destructive: 0 84.2% 60.2%; /* Standard destructive red */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 30% 25%; /* Dark red border */
+    --input: 0 30% 25%;
+    --ring: 0 70% 60%; /* Primary red for ring, slightly lighter */
+
+    --chart-1: 0 70% 60%;
+    --chart-2: 20 65% 55%;
+    --chart-3: 0 80% 70%;
+    --chart-4: 30 75% 50%;
+    --chart-5: 10 60% 65%;
+
+    --sidebar-background: 0 40% 8%;
+    --sidebar-foreground: 0 10% 88%;
+    --sidebar-primary: 0 70% 55%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 30 80% 50%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 0 30% 22%;
+    --sidebar-ring: 0 70% 60%;
+  }
+
+  /* Midnight Ocean Theme */
+  html.midnight-ocean {
+    --background: 220 50% 8%; /* Deep, dark blue, almost black */
+    --foreground: 190 30% 92%; /* Light cyan or very light gray-blue */
+    --card: 220 50% 10%; /* Slightly lighter dark blue card */
+    --card-foreground: 190 30% 92%;
+    --popover: 220 50% 10%;
+    --popover-foreground: 190 30% 92%;
+
+    --primary: 210 70% 50%; /* Medium, slightly desaturated blue */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 200 30% 18%; /* Dark muted teal or gray-blue */
+    --secondary-foreground: 190 25% 80%; /* Lighter teal/gray-blue for text */
+
+    --muted: 220 40% 12%; /* Very dark blue, almost black */
+    --muted-foreground: 210 20% 60%; /* Medium gray-blue */
+
+    --accent: 180 70% 55%; /* Bright Teal/Cyan accent */
+    --accent-foreground: 220 50% 10%; /* Dark blue or black */
+    
+    --destructive: 0 60% 50%; /* Standard destructive red (can be adjusted for theme) */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 40% 22%; /* Dark blue border */
+    --input: 210 40% 22%;
+    --ring: 210 70% 55%; /* Primary blue for ring, slightly lighter */
+
+    --chart-1: 210 65% 55%;
+    --chart-2: 190 60% 50%;
+    --chart-3: 230 75% 65%;
+    --chart-4: 180 70% 45%;
+    --chart-5: 200 55% 60%;
+
+    --sidebar-background: 220 50% 6%;
+    --sidebar-foreground: 190 30% 88%;
+    --sidebar-primary: 210 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 180 70% 55%;
+    --sidebar-accent-foreground: 220 50% 10%;
+    --sidebar-border: 210 40% 20%;
+    --sidebar-ring: 210 70% 55%;
+  }
 }
 
 @layer base {
