@@ -194,6 +194,98 @@ body {
     --sidebar-border: 270 20% 22%;
     --sidebar-ring: 280 70% 70%;
   }
+
+  /* Green Dark Theme */
+  html.green-dark {
+    --background: 120 10% 8%; /* Very dark desaturated green */
+    --foreground: 120 10% 92%; /* Light greenish gray */
+
+    --card: 120 10% 10%; /* Slightly lighter dark green card */
+    --card-foreground: 120 10% 92%;
+
+    --popover: 120 10% 10%;
+    --popover-foreground: 120 10% 92%;
+
+    --primary: 140 60% 45%; /* Main dark green */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 120 10% 15%; /* Darker muted green */
+    --secondary-foreground: 120 10% 80%; /* Lighter green for text */
+
+    --muted: 120 8% 12%; /* Very dark, slightly less saturated green */
+    --muted-foreground: 120 10% 60%; /* Medium greenish gray */
+
+    --accent: 130 65% 55%; /* Brighter lime green accent */
+    --accent-foreground: 0 0% 0%; /* Black for good contrast on lime */
+
+    --destructive: 0 60% 50%; /* Desaturated red for dark */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 10% 20%; /* Dark green border */
+    --input: 120 10% 20%;
+    --ring: 140 60% 50%; /* Primary green for ring, slightly lighter */
+
+    --chart-1: 140 60% 50%;
+    --chart-2: 130 50% 45%;
+    --chart-3: 150 70% 60%;
+    --chart-4: 120 55% 50%;
+    --chart-5: 135 45% 55%;
+
+    --sidebar-background: 120 10% 6%;
+    --sidebar-foreground: 120 10% 88%;
+    --sidebar-primary: 140 60% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 130 65% 55%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 120 10% 18%;
+    --sidebar-ring: 140 60% 50%;
+  }
+
+  /* Amber Theme (Light) */
+  html.amber {
+    --background: 35 100% 97%; /* Very light amber/cream */
+    --foreground: 30 60% 25%; /* Dark rich brown */
+
+    --card: 35 100% 95%; /* Light amber card */
+    --card-foreground: 30 60% 25%;
+
+    --popover: 35 100% 95%;
+    --popover-foreground: 30 60% 25%;
+
+    --primary: 38 90% 55%; /* Main amber/orange */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 40 80% 90%; /* Lighter amber */
+    --secondary-foreground: 35 50% 40%; /* Darker amber for text */
+
+    --muted: 40 70% 94%; /* Very light amber-gray */
+    --muted-foreground: 35 40% 55%; /* Medium amber-gray */
+
+    --accent: 45 100% 60%; /* Warm yellow/gold accent */
+    --accent-foreground: 30 70% 20%; /* Dark brown for good contrast on yellow */
+
+    --destructive: 0 80% 60%; /* Standard red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 60% 85%; /* Light amber-gray border */
+    --input: 35 60% 85%;
+    --ring: 38 90% 60%; /* Primary amber for ring */
+
+    --chart-1: 38 85% 60%;
+    --chart-2: 45 75% 55%;
+    --chart-3: 30 90% 70%;
+    --chart-4: 42 80% 65%;
+    --chart-5: 35 70% 50%;
+
+    --sidebar-background: 35 100% 96%;
+    --sidebar-foreground: 30 60% 30%;
+    --sidebar-primary: 38 90% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 45 100% 60%;
+    --sidebar-accent-foreground: 30 70% 20%;
+    --sidebar-border: 35 60% 88%;
+    --sidebar-ring: 38 90% 60%;
+  }
 }
 
 @layer base {

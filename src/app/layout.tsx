@@ -33,9 +33,11 @@ const availableThemes = [
   'dark', 
   'system', 
   'blue', 
-  'dark-purple'
+  'dark-purple',
+  'green-dark',
+  'amber',
   // Add other theme names here as they are implemented in globals.css
-  // "green-dark", "amber", "dark-red", "midnight-ocean", 
+  // "dark-red", "midnight-ocean", 
   // "emerald-forest", "cyber-neon", "sunset-gold", "arctic-frost"
 ];
 
