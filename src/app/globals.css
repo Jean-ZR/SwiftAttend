@@ -55,7 +55,8 @@ body {
     --sidebar-border: 0 0% 85%;
     --sidebar-ring: 180 100% 25%;
   }
-  .dark {
+
+  html.dark { /* Changed from .dark to html.dark for specificity with next-themes */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -100,6 +101,98 @@ body {
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 15.9%;
     --sidebar-ring: 180 100% 30%;
+  }
+
+  /* Blue Theme */
+  html.blue {
+    --background: 210 100% 98%; /* Very light, almost white-blue */
+    --foreground: 220 30% 20%; /* Dark grayish blue */
+
+    --card: 210 100% 96%; /* Light blue card */
+    --card-foreground: 220 30% 20%;
+
+    --popover: 210 100% 96%;
+    --popover-foreground: 220 30% 20%;
+
+    --primary: 220 80% 55%; /* Main blue */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 210 60% 90%; /* Lighter blue */
+    --secondary-foreground: 220 50% 30%; /* Darker blue for text on secondary */
+
+    --muted: 210 50% 94%; /* Very light blue-gray */
+    --muted-foreground: 210 30% 45%; /* Medium blue-gray */
+
+    --accent: 190 75% 45%; /* Cyan/Teal accent */
+    --accent-foreground: 0 0% 100%; /* White */
+
+    --destructive: 0 80% 60%; /* Standard red */
+    --destructive-foreground: 0 0% 100%; /* White */
+
+    --border: 210 40% 85%; /* Light blue-gray border */
+    --input: 210 40% 85%;
+    --ring: 220 80% 60%; /* Primary blue for ring */
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 190 60% 45%;
+    --chart-3: 230 80% 65%;
+    --chart-4: 210 75% 55%;
+    --chart-5: 200 65% 60%;
+
+    --sidebar-background: 210 100% 97%;
+    --sidebar-foreground: 220 30% 25%;
+    --sidebar-primary: 220 80% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 190 75% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 40% 88%;
+    --sidebar-ring: 220 80% 60%;
+  }
+
+  /* Dark Purple Theme */
+  html.dark-purple {
+    --background: 270 30% 10%; /* Very dark purple */
+    --foreground: 270 20% 92%; /* Light grayish purple */
+
+    --card: 270 30% 12%; /* Darker purple card */
+    --card-foreground: 270 20% 92%;
+
+    --popover: 270 30% 12%;
+    --popover-foreground: 270 20% 92%;
+
+    --primary: 280 70% 65%; /* Vibrant purple */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 270 20% 20%; /* Dark muted purple */
+    --secondary-foreground: 270 20% 80%; /* Lighter purple for text */
+
+    --muted: 270 15% 15%; /* Very dark, slightly less saturated purple */
+    --muted-foreground: 270 15% 60%; /* Medium grayish purple */
+
+    --accent: 300 60% 60%; /* Magenta/Pinkish accent */
+    --accent-foreground: 0 0% 100%; /* White */
+
+    --destructive: 0 60% 50%; /* Desaturated red for dark */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 20% 25%; /* Dark purple border */
+    --input: 270 20% 25%;
+    --ring: 280 70% 70%; /* Primary purple for ring, slightly lighter */
+
+    --chart-1: 280 65% 60%;
+    --chart-2: 300 55% 55%;
+    --chart-3: 260 70% 70%;
+    --chart-4: 290 60% 50%;
+    --chart-5: 270 50% 65%;
+
+    --sidebar-background: 270 30% 8%;
+    --sidebar-foreground: 270 20% 88%;
+    --sidebar-primary: 280 70% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 300 60% 60%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 270 20% 22%;
+    --sidebar-ring: 280 70% 70%;
   }
 }
 

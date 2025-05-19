@@ -27,6 +27,18 @@ export const metadata: Metadata = {
   },
 };
 
+// Define the list of available themes
+const availableThemes = [
+  'light', 
+  'dark', 
+  'system', 
+  'blue', 
+  'dark-purple'
+  // Add other theme names here as they are implemented in globals.css
+  // "green-dark", "amber", "dark-red", "midnight-ocean", 
+  // "emerald-forest", "cyber-neon", "sunset-gold", "arctic-frost"
+];
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,9 +50,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background font-sans`}
       >
         <ThemeProvider
-          attribute="class"
+          attribute="class" // Using class attribute for next-themes
           defaultTheme="system"
           enableSystem
+          themes={availableThemes} // Pass the list of themes
           disableTransitionOnChange
         >
           <AuthProvider>
