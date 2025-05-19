@@ -374,6 +374,95 @@ body {
     --sidebar-border: 210 40% 20%;
     --sidebar-ring: 210 70% 55%;
   }
+
+  /* Emerald Forest Theme */
+  html.emerald-forest {
+    --background: 140 20% 10%; /* Very dark desaturated green/brown */
+    --foreground: 40 30% 90%; /* Light, earthy tone */
+    --card: 140 20% 12%; /* Slightly lighter dark green card */
+    --card-foreground: 40 30% 90%;
+    --popover: 140 20% 12%;
+    --popover-foreground: 40 30% 90%;
+
+    --primary: 150 60% 35%; /* Rich, deep emerald green */
+    --primary-foreground: 0 0% 98%; /* White */
+
+    --secondary: 140 15% 25%; /* Muted forest green/brown */
+    --secondary-foreground: 40 25% 80%; /* Lighter earthy tone for text */
+
+    --muted: 140 10% 15%; /* Darker, desaturated green */
+    --muted-foreground: 40 20% 60%; /* Medium earthy tone */
+
+    --accent: 130 50% 55%; /* Lighter, natural green accent */
+    --accent-foreground: 0 0% 10%; /* Dark color for contrast on accent */
+    
+    --destructive: 0 50% 45%; /* Muted red for dark theme */
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 140 15% 20%; /* Dark earthy green border */
+    --input: 140 15% 20%;
+    --ring: 150 60% 40%; /* Primary green for ring, slightly lighter */
+
+    --chart-1: 150 55% 40%;
+    --chart-2: 130 45% 50%;
+    --chart-3: 160 65% 30%;
+    --chart-4: 120 40% 45%;
+    --chart-5: 50 60% 50%; /* Earthy yellow/brown */
+
+    --sidebar-background: 140 20% 8%;
+    --sidebar-foreground: 40 30% 88%;
+    --sidebar-primary: 150 60% 35%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 130 50% 55%;
+    --sidebar-accent-foreground: 0 0% 10%;
+    --sidebar-border: 140 15% 18%;
+    --sidebar-ring: 150 60% 40%;
+  }
+
+  /* Cyber Neon Theme */
+  html.cyber-neon {
+    --background: 240 50% 5%; /* Very dark blue, almost black */
+    --foreground: 180 100% 95%; /* Very light cyan */
+    --card: 240 50% 7%; /* Slightly lighter dark background for card */
+    --card-foreground: 180 100% 95%;
+    --popover: 240 50% 7%;
+    --popover-foreground: 180 100% 95%;
+
+    --primary: 320 100% 55%; /* Neon Pink/Magenta */
+    --primary-foreground: 0 0% 100%; /* White, for pop on neon pink */
+
+    --secondary: 220 100% 60%; /* Electric Blue */
+    --secondary-foreground: 0 0% 100%; /* White */
+
+    --muted: 240 40% 10%; /* Darker, desaturated version of the background */
+    --muted-foreground: 180 80% 70%; /* Lighter neon tint */
+
+    --accent: 90 100% 50%; /* Neon Lime Green */
+    --accent-foreground: 0 0% 5%; /* Black, for high contrast on lime green */
+    
+    --destructive: 0 100% 50%; /* Bright, pure red for neon destructive */
+    --destructive-foreground: 0 0% 100%; /* White */
+
+    --border: 240 30% 20%; /* Dark, subtle neon-ish border or dark gray */
+    --input: 240 30% 20%;
+    --ring: 320 100% 60%; /* Primary color (Neon Pink) for ring */
+
+    --chart-1: 320 100% 60%; /* Neon Pink */
+    --chart-2: 220 100% 65%; /* Electric Blue */
+    --chart-3: 90 100% 55%;  /* Neon Lime Green */
+    --chart-4: 280 100% 60%; /* Neon Purple */
+    --chart-5: 180 100% 50%; /* Neon Cyan */
+
+    --sidebar-background: 240 50% 4%;
+    --sidebar-foreground: 180 100% 90%;
+    --sidebar-primary: 320 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 90 100% 50%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 240 30% 15%;
+    --sidebar-ring: 320 100% 60%;
+  }
+
 }
 
 @layer base {

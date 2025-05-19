@@ -38,8 +38,10 @@ const availableThemes = [
   'amber',
   'dark-red',
   'midnight-ocean',
+  'emerald-forest',
+  'cyber-neon',
   // Add other theme names here as they are implemented in globals.css
-  // "emerald-forest", "cyber-neon", "sunset-gold", "arctic-frost"
+  // "sunset-gold", "arctic-frost"
 ];
 
 export default function RootLayout({
