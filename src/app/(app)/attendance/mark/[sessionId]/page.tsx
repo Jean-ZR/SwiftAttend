@@ -63,8 +63,8 @@ export default function MarkAttendanceForSessionPage() {
   }, [sessionId, role, router, toast]);
 
   const handleSubmitAttendance = () => {
-    if (!user || !user.uid || !user.displayName) {
-      toast({ title: "Authentication Error", description: "You must be logged in to mark attendance.", variant: "destructive" });
+    if (!user || !user.uid || (!user.displayName && !user.email)) { // Changed this line
+      toast({ title: "Authentication Error", description: "User details incomplete. You must be logged in with a valid identifier (name or email) to mark attendance.", variant: "destructive" });
       return;
     }
     if (!sessionDetails) {
@@ -78,8 +78,8 @@ export default function MarkAttendanceForSessionPage() {
 
       const result = await markStudentAttendance({
         sessionId: sessionDetails.id,
-        studentId: user.uid, // For teachers, this will be their UID
-        studentName: user.displayName || user.email || "Unknown User", // Name of student or teacher
+        studentId: user.uid, 
+        studentName: user.displayName || user.email || "Unknown User", 
       });
 
       if (result.success) {
@@ -122,7 +122,7 @@ export default function MarkAttendanceForSessionPage() {
     );
   }
 
-  if (validationError && !sessionDetails) { // Only show full error page if session details are not loaded
+  if (validationError && !sessionDetails) { 
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <Card className="w-full max-w-md shadow-xl">
@@ -186,7 +186,7 @@ export default function MarkAttendanceForSessionPage() {
               <p className="text-center text-sm text-muted-foreground">
                 User: {user?.displayName || user?.email} ({role})
               </p>
-              {validationError && ( // Show validation error here if it's just a warning (e.g., session not active but still showing page)
+              {validationError && ( 
                  <div className="text-center p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-md flex items-center justify-center text-yellow-600 dark:text-yellow-400">
                     <Info className="h-5 w-5 mr-2" />
                     <p className="text-sm">{validationError}</p>
@@ -201,7 +201,7 @@ export default function MarkAttendanceForSessionPage() {
               <Button 
                 onClick={handleSubmitAttendance} 
                 className="w-full" 
-                disabled={isSubmissionPending || !user || !!validationError} // Disable if there's a validation error preventing submission
+                disabled={isSubmissionPending || !user || !!validationError} 
               >
                 {isSubmissionPending ? (
                   <>
@@ -224,5 +224,3 @@ export default function MarkAttendanceForSessionPage() {
     </div>
   );
 }
-
-    
