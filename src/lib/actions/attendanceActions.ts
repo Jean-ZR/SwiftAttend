@@ -127,30 +127,70 @@ export async function getStudentAttendanceHistory(studentId: string) {
     return { error: "Student ID is required." };
   }
   try {
-    const q = query(collection(db, "attendanceRecords"), where("studentId", "==", studentId), orderBy("timestamp", "desc"));
+    const q = query(
+      collection(db, "attendanceRecords"),
+      where("studentId", "==", studentId),
+      orderBy("timestamp", "desc")
+    );
     const querySnapshot = await getDocs(q);
-    
-    const recordsWithCourseNames = await Promise.all(querySnapshot.docs.map(async (docSnap) => {
-      const record = docSnap.data();
-      const sessionRes = await getAttendanceSession(record.sessionId); 
-      const createdAtFromSession = sessionRes.session?.createdAt instanceof Timestamp 
-                                   ? sessionRes.session.createdAt.toDate().toLocaleString() 
-                                   : String(sessionRes.session?.createdAt);
-      return {
-        id: docSnap.id,
-        ...record,
-        courseName: sessionRes.session?.courseName || "Unknown Course",
-        timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : String(record.timestamp),
-        sessionCreatedAt: createdAtFromSession, 
-      };
-    }));
+
+    const recordsWithCourseNames = await Promise.all(
+      querySnapshot.docs.map(async (docSnap) => {
+        const record = docSnap.data();
+        
+        if (!record.sessionId) {
+          console.error(`Attendance record ${docSnap.id} is missing sessionId for student ${studentId}`);
+          return { // Return a placeholder or skip
+            id: docSnap.id,
+            ...record,
+            courseName: "Error: Session ID missing",
+            timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : String(record.timestamp),
+            sessionCreatedAt: "N/A",
+          };
+        }
+
+        const sessionRes = await getAttendanceSession(record.sessionId);
+        
+        let courseName = "Unknown Course";
+        let sessionCreatedAtStr = "N/A";
+
+        if (sessionRes.success && sessionRes.session) {
+          courseName = sessionRes.session.courseName || "Unknown Course";
+          // sessionRes.session.createdAt is already a string from getAttendanceSession
+          sessionCreatedAtStr = sessionRes.session.createdAt; 
+        } else {
+          // Log this but don't let it break the whole history
+          console.warn(`Could not fetch session details for sessionId: ${record.sessionId} (Error: ${sessionRes.error}) while fetching history for student ${studentId}. Record ID: ${docSnap.id}`);
+          courseName = `Session Data Error`; // Or more specific: `Error: ${sessionRes.error}`
+        }
+
+        return {
+          id: docSnap.id,
+          ...record,
+          courseName,
+          timestamp: record.timestamp instanceof Timestamp ? record.timestamp.toDate().toLocaleDateString() : String(record.timestamp),
+          sessionCreatedAt: sessionCreatedAtStr,
+        };
+      })
+    );
 
     return { success: true, records: recordsWithCourseNames };
-  } catch (error) {
-    console.error("Error fetching student attendance history:", error);
-    return { error: "Could not fetch attendance history." };
+  } catch (error: any) {
+    console.error("Error fetching student attendance history for studentId", studentId, ":", error);
+    let detailedError = "Could not fetch attendance history.";
+    if (error.message) {
+      detailedError += ` Firebase: ${error.message}`;
+    }
+    if (error.code) {
+      detailedError += ` (Code: ${error.code})`;
+      if (error.code === 'failed-precondition' && error.message && error.message.toLowerCase().includes('index')) {
+        detailedError += " This often indicates a missing Firestore index. Please check your Firebase console for a link to create it.";
+      }
+    }
+    return { error: detailedError };
   }
 }
+
 
 export async function getTeacherAttendanceSessions(teacherId: string) {
   if (!teacherId) {
