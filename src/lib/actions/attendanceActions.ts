@@ -253,9 +253,19 @@ export async function getAttendanceRecordsForSession(sessionId: string) {
       };
     });
     return { success: true, records };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching attendance records for session:", error);
-    return { error: "Could not fetch attendance records." };
+    let detailedError = "Could not fetch attendance records for session.";
+    if (error.message) {
+      detailedError += ` Firebase: ${error.message}`;
+    }
+    if (error.code) {
+      detailedError += ` (Code: ${error.code})`;
+      if (error.code === 'failed-precondition' && error.message && error.message.toLowerCase().includes('index')) {
+        detailedError += " This often indicates a missing Firestore index. Please check your Firebase console for a link to create it.";
+      }
+    }
+    return { error: detailedError };
   }
 }
 
@@ -267,7 +277,7 @@ export async function updateSessionStatus(sessionId: string, active: boolean) {
   try {
     const sessionRef = doc(db, "attendanceSessions", sessionId);
     await updateDoc(sessionRef, { active });
-    return { success: `Session ${active ? 'started' : 'ended'} successfully.` };
+    return { success: `Session ${active ? 'restarted' : 'ended'} successfully.` }; // Changed "started" to "restarted" for clarity
   } catch (error) {
     console.error("Error updating session status:", error);
     return { error: "Could not update session status." };
